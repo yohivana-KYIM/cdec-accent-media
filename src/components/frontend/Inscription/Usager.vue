@@ -150,10 +150,39 @@
               >
                 <option value="">Sélectionnez votre état civil</option>
                 <option value="Célibataire">Célibataire</option>
-                <option value="Marié(e)">Marié(e)</option>
-                <option value="Divorcé(e)">Divorcé(e)</option>
-                <option value="Veuf(ve)">Veuf(ve)</option>
+                <option value="Marié">Marié</option>
+                <option value="Divorcé">Divorcé</option>
+                <option value="Veuf">Veuf</option>
               </select>
+            </div>
+
+            <div class="form-group">
+              <label for="datenaissance">Date de naissance *</label>
+              <input
+                v-model="formData.datenaissance"
+                type="date"
+                id="datenaissance"
+                required
+                class="form-control"
+              />
+              <span v-if="errors.datenaissance" class="error">{{
+                errors.datenaissance
+              }}</span>
+            </div>
+
+            <div class="form-group">
+              <label for="sexe">Sexe *</label>
+              <select
+                v-model="formData.sexe"
+                id="sexe"
+                required
+                class="form-control"
+              >
+                <option value="">Sélectionnez votre sexe</option>
+                <option value="masculin">Masculin</option>
+                <option value="feminin">Féminin</option>
+              </select>
+              <span v-if="errors.sexe" class="error">{{ errors.sexe }}</span>
             </div>
 
             <div class="flex justify-between mt-6 buttons-container">
@@ -182,7 +211,7 @@ import PaysService from "../../../services/PaysService";
 import VilleService from "../../../services/VilleService";
 import { useAuthStore } from "../../../stores/auth";
 import Swal from "sweetalert2";
-import { nanoid } from "nanoid";
+
 export default {
   name: "MemberAccess",
   setup() {
@@ -198,11 +227,14 @@ export default {
       pays_id: "",
       ville_id: "",
       etat_civil: "",
+      datenaissance: "",
+      sexe: "",
     });
     const paysList = ref([]);
     const villesList = ref([]);
     const selectedPaysId = ref("");
     const selectedVilleId = ref("");
+    const errors = ref({});
     const isLoading = ref(false);
     const showPassword = ref(false);
     const showConfirmPassword = ref(false);
@@ -218,7 +250,6 @@ export default {
     const handlePaysChange = async () => {
       selectedVilleId.value = "";
       villesList.value = [];
-
       if (selectedPaysId.value) {
         try {
           isLoading.value = true;
@@ -246,13 +277,52 @@ export default {
       }
     });
 
+    const validateDateOfBirth = (date) => {
+      const today = new Date();
+      const birthDate = new Date(date);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
+        return age - 1;
+      }
+      return age;
+    };
+
     const handleSubmit = async () => {
+      errors.value = {}; // Réinitialiser les erreurs
+      if (validateDateOfBirth(formData.value.datenaissance) < 18) {
+        errors.value.datenaissance = "Vous devez avoir au moins 18 ans.";
+        return;
+      }
+
       try {
         await authStore.registerUsager(formData.value);
-        // Handle successful registration (e.g., redirect or show a success message)
+        Swal.fire({
+          title: "Succès!",
+          text: "Inscription réussie!",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then(() => {
+          // Réinitialiser le formulaire
+          Object.keys(formData.value).forEach((key) => {
+            formData.value[key] = "";
+          });
+        });
       } catch (error) {
         console.error("Erreur lors de l'inscription:", error);
-        // Handle error (e.g., show an error message)
+        if (error.response && error.response.data.errors) {
+          errors.value = error.response.data.errors;
+        }
+        Swal.fire(
+          "Erreur",
+          "Une erreur est survenue lors de l'inscription.",
+          "error"
+        );
+      } finally {
+        isLoading.value = false;
       }
     };
 
@@ -269,6 +339,7 @@ export default {
       toggleConfirmPasswordVisibility,
       handlePaysChange,
       handleSubmit,
+      errors,
     };
   },
 };
@@ -279,7 +350,9 @@ export default {
   min-height: 100vh;
   background-color: #f8fafc;
 }
-
+.error {
+  color: red;
+}
 .member-access-content {
   display: flex;
   min-height: 100vh;
