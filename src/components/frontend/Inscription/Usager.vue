@@ -1,114 +1,174 @@
 <template>
-  <div class="member-access-container">
-    <div class="member-access-content">
-      <div class="left-column">
+  <div
+    class="min-h-screen bg-gray-50 flex items-center justify-center p-4 md:p-8"
+  >
+    <div
+      class="w-full max-w-6xl bg-white shadow-2xl rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2"
+    >
+      <!-- Left Column - Background Image -->
+      <div class="hidden md:block relative">
         <img
           src="/images/login/login.jpg"
-          alt="Login background"
-          class="login-image"
+          alt="Registration Background"
+          class="absolute inset-0 w-full h-full object-cover object-center"
         />
+        <div
+          class="absolute inset-0 flex items-center justify-center bg-opacity-30 bg-black"
+        >
+          <div class="text-center text-white px-6">
+            <h1 class="text-5xl font-bold mb-4">Bienvenue</h1>
+            <p class="text-xl opacity-90">
+              Créez votre compte et rejoignez notre communauté
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div class="right-column">
-        <div class="form-container">
-          <h2 class="form-title">Inscription</h2>
+      <!-- Right Column - Registration Form -->
+      <div class="p-6 md:p-12 overflow-y-auto max-h-screen bg-white">
+        <h2 class="text-3xl font-extrabold text-gray-800 text-center mb-8">
+          Inscription
+        </h2>
 
-          <form @submit.prevent="handleSubmit" class="registration-form">
-            <div class="form-group">
-              <label for="name">Nom *</label>
+        <form @submit.prevent="handleSubmit" class="space-y-6">
+          <!-- Personal Information -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Name Field -->
+            <div>
+              <label
+                for="name"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                Nom *
+              </label>
               <input
                 v-model="formData.name"
                 type="text"
                 id="name"
                 required
-                class="form-control"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
               />
             </div>
 
-            <div class="form-group">
-              <label for="email">Email *</label>
+            <!-- Email Field -->
+            <div>
+              <label
+                for="email"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                Email *
+              </label>
               <input
                 v-model="formData.email"
                 type="email"
                 id="email"
                 required
-                class="form-control"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
               />
             </div>
+          </div>
 
-            <div class="form-group">
-              <label for="password">Mot de passe *</label>
+          <!-- Password Fields -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="relative">
+              <label
+                for="password"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                Mot de passe *
+              </label>
               <input
                 v-model="formData.password"
                 :type="showPassword ? 'text' : 'password'"
                 id="password"
                 required
-                class="form-control"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg pr-10 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
               />
-              <button type="button" @click="togglePasswordVisibility">
+              <button
+                type="button"
+                @click="togglePasswordVisibility"
+                class="absolute right-3 top-9 text-gray-500 hover:text-blue-600 transition"
+              >
                 <span v-if="showPassword">👁️</span>
                 <span v-else>🙈</span>
               </button>
             </div>
 
-            <div class="form-group">
-              <label for="password_confirmation"
-                >Confirmer le mot de passe *</label
+            <div class="relative">
+              <label
+                for="password_confirmation"
+                class="block text-sm font-semibold text-gray-700 mb-2"
               >
+                Confirmer le mot de passe *
+              </label>
               <input
                 v-model="formData.password_confirmation"
                 :type="showConfirmPassword ? 'text' : 'password'"
                 id="password_confirmation"
                 required
-                class="form-control"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg pr-10 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
               />
-              <button type="button" @click="toggleConfirmPasswordVisibility">
+              <button
+                type="button"
+                @click="toggleConfirmPasswordVisibility"
+                class="absolute right-3 top-9 text-gray-500 hover:text-blue-600 transition"
+              >
                 <span v-if="showConfirmPassword">👁️</span>
                 <span v-else>🙈</span>
               </button>
             </div>
+          </div>
 
-            <div class="form-group">
-              <label for="adresse">Adresse *</label>
+          <!-- Contact Information -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label
+                for="adresse"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                Adresse *
+              </label>
               <input
                 v-model="formData.adresse"
                 type="text"
                 id="adresse"
                 required
-                class="form-control"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
               />
             </div>
 
-            <div class="form-group">
-              <label for="numero_telephone">Numéro de téléphone *</label>
+            <div>
+              <label
+                for="numero_telephone"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                Numéro de téléphone *
+              </label>
               <input
                 v-model="formData.numero_telephone"
                 type="text"
                 id="numero_telephone"
                 required
-                class="form-control"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
               />
             </div>
+          </div>
 
-            <div class="form-group">
-              <label for="numero_fiscal">Numéro fiscal *</label>
-              <input
-                v-model="formData.numero_fiscal"
-                type="text"
-                id="numero_fiscal"
-                required
-                class="form-control"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="pays_id">Pays *</label>
+          <!-- Location Information -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label
+                for="pays_id"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                Pays *
+              </label>
               <select
                 v-model="selectedPaysId"
                 id="pays_id"
                 required
-                class="form-control"
                 @change="handlePaysChange"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
               >
                 <option value="">Sélectionnez un pays</option>
                 <option
@@ -121,13 +181,18 @@
               </select>
             </div>
 
-            <div class="form-group">
-              <label for="ville_id">Ville *</label>
+            <div>
+              <label
+                for="ville_id"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                Ville *
+              </label>
               <select
                 v-model="formData.ville_id"
                 id="ville_id"
                 required
-                class="form-control"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
               >
                 <option value="">Sélectionnez une ville</option>
                 <option
@@ -139,67 +204,111 @@
                 </option>
               </select>
             </div>
+          </div>
 
-            <div class="form-group">
-              <label for="etat_civil">État civil *</label>
+          <!-- Additional Information -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label
+                for="numero_fiscal"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                Numéro fiscal *
+              </label>
+              <input
+                v-model="formData.numero_fiscal"
+                type="text"
+                id="numero_fiscal"
+                required
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
+              />
+            </div>
+
+            <div>
+              <label
+                for="etat_civil"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                État civil *
+              </label>
               <select
                 v-model="formData.etat_civil"
                 id="etat_civil"
                 required
-                class="form-control"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
               >
                 <option value="">Sélectionnez votre état civil</option>
                 <option value="Célibataire">Célibataire</option>
-                <option value="Marié">Marié</option>
-                <option value="Divorcé">Divorcé</option>
-                <option value="Veuf">Veuf</option>
+                <option value="Marié(e)">Marié(e)</option>
+                <option value="Divorcé(e)">Divorcé(e)</option>
+                <option value="Veuf(ve)">Veuf(ve)</option>
               </select>
             </div>
+          </div>
 
-            <div class="form-group">
-              <label for="datenaissance">Date de naissance *</label>
+          <!-- Personal Details -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label
+                for="datenaissance"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                Date de naissance *
+              </label>
               <input
                 v-model="formData.datenaissance"
                 type="date"
                 id="datenaissance"
                 required
-                class="form-control"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
               />
-              <span v-if="errors.datenaissance" class="error">{{
-                errors.datenaissance
-              }}</span>
+              <span
+                v-if="errors.datenaissance"
+                class="text-red-500 text-sm mt-1"
+              >
+                {{ errors.datenaissance }}
+              </span>
             </div>
 
-            <div class="form-group">
-              <label for="sexe">Sexe *</label>
+            <div>
+              <label
+                for="sexe"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                Sexe *
+              </label>
               <select
                 v-model="formData.sexe"
                 id="sexe"
                 required
-                class="form-control"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
               >
                 <option value="">Sélectionnez votre sexe</option>
                 <option value="masculin">Masculin</option>
                 <option value="feminin">Féminin</option>
               </select>
-              <span v-if="errors.sexe" class="error">{{ errors.sexe }}</span>
             </div>
+          </div>
 
-            <div class="flex justify-between mt-6 buttons-container">
-              <button
-                type="button"
-                @click="prevStep"
-                class="btn btn-secondary"
-                v-if="currentStep > 1"
-              >
-                ← Précédent
-              </button>
-              <button type="submit" class="btn btn-success">
-                Terminer l'inscription
-              </button>
-            </div>
-          </form>
-        </div>
+          <!-- Action Buttons -->
+          <div
+            class="flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4 pt-8"
+          >
+            <button
+              type="submit"
+              class="w-full md:w-auto flex-grow px-8 py-3 bg-[#009639] text-white rounded-lg hover:bg-[#007d30] transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#009639] focus:ring-opacity-50 shadow-lg"
+            >
+              Terminer l'inscription
+            </button>
+            <button
+              @click="redirectToSponsor"
+              type="button"
+              class="w-full md:w-auto flex-grow px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-yellow-500 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow-lg"
+            >
+              Devenir partenaire
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -262,6 +371,11 @@ export default {
           formData.value.pays_id = selectedPaysId.value;
         } catch (error) {
           console.error("Erreur lors du chargement des villes:", error);
+          Swal.fire({
+            title: "Erreur",
+            text: "Impossible de charger les villes. Veuillez réessayer.",
+            icon: "error",
+          });
         } finally {
           isLoading.value = false;
         }
@@ -274,6 +388,11 @@ export default {
         paysList.value = response.data?.data || response.data || [];
       } catch (error) {
         console.error("Erreur lors du chargement des pays:", error);
+        Swal.fire({
+          title: "Erreur",
+          text: "Impossible de charger la liste des pays. Veuillez réessayer.",
+          icon: "error",
+        });
       }
     });
 
@@ -291,47 +410,83 @@ export default {
       return age;
     };
 
-    const handleSubmit = async () => {
-      errors.value = {}; // Réinitialiser les erreurs
+    const validateForm = () => {
+      const errors = {};
+
       if (validateDateOfBirth(formData.value.datenaissance) < 18) {
-        errors.value.datenaissance = "Vous devez avoir au moins 18 ans.";
+        errors.datenaissance = "Vous devez avoir au moins 18 ans.";
+      }
+
+      if (formData.value.password !== formData.value.password_confirmation) {
+        errors.password = "Les mots de passe ne correspondent pas.";
+      }
+
+      if (formData.value.password && formData.value.password.length < 8) {
+        errors.password =
+          "Le mot de passe doit contenir au moins 8 caractères.";
+      }
+
+      return errors;
+    };
+
+    const handleSubmit = async () => {
+      const validationErrors = validateForm();
+
+      if (Object.keys(validationErrors).length > 0) {
+        errors.value = validationErrors;
         return;
       }
 
       try {
+        isLoading.value = true;
         await authStore.registerUsager(formData.value);
+
         Swal.fire({
           title: "Succès!",
-          text: "Inscription réussie!",
+          text: "Inscription réussie! Vous allez être redirigé vers la page de connexion.",
           icon: "success",
           confirmButtonText: "OK",
         }).then(() => {
-          // Réinitialiser le formulaire
+          // Reset form
           Object.keys(formData.value).forEach((key) => {
             formData.value[key] = "";
           });
+          // Redirect to login page or dashboard
+          window.location.href = "/login";
         });
       } catch (error) {
         console.error("Erreur lors de l'inscription:", error);
-        if (error.response && error.response.data.errors) {
+
+        let errorMessage = "Une erreur est survenue lors de l'inscription.";
+        if (error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        }
+        if (error.response?.data?.errors) {
           errors.value = error.response.data.errors;
         }
-        Swal.fire(
-          "Erreur",
-          "Une erreur est survenue lors de l'inscription.",
-          "error"
-        );
+
+        Swal.fire({
+          title: "Erreur",
+          text: errorMessage,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
       } finally {
         isLoading.value = false;
       }
     };
 
+    const redirectToSponsor = () => {
+      window.location.href = "/sponsor";
+    };
+
     return {
       formData,
-      selectedPaysId,
-      selectedVilleId,
       paysList,
       villesList,
+      selectedPaysId,
+      selectedVilleId,
+      errors,
       isLoading,
       showPassword,
       showConfirmPassword,
@@ -339,96 +494,49 @@ export default {
       toggleConfirmPasswordVisibility,
       handlePaysChange,
       handleSubmit,
-      errors,
+      redirectToSponsor,
     };
   },
 };
 </script>
 
 <style scoped>
-.member-access-container {
-  min-height: 100vh;
-  background-color: #f8fafc;
-}
-.error {
-  color: red;
-}
-.member-access-content {
-  display: flex;
-  min-height: 100vh;
+/* Add any additional custom styles here if needed */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  border-radius: 4px;
+  margin-right: 2px;
+  opacity: 0.6;
+  filter: invert(0.8);
 }
 
-.left-column {
-  flex: 1;
-  display: none; /* Caché sur mobile */
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
 }
 
-.right-column {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-  background-color: white;
-}
-
-.login-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.form-container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.form-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a5d1a;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.form-control {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  background-color: #f8fafc;
+/* Smooth transitions */
+.form-control,
+select,
+input,
+button {
   transition: all 0.3s ease;
 }
 
-.form-control:focus {
-  border-color: #1a5d1a;
-  box-shadow: 0 0 0 3px rgba(26, 93, 26, 0.1);
+/* Custom focus states */
+input:focus,
+select:focus {
   outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
-.btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
+/* Error state styling */
+.error {
+  border-color: #ef4444;
 }
 
-.btn-success {
-  background-color: #1a5d1a;
-  color: white;
-}
-
-.btn-success:hover {
-  background-color: #164a16;
-}
-
-/* Media queries */
-@media (min-width: 1024px) {
-  .left-column {
-    display: block; /* Afficher sur desktop */
-  }
-
-  .right-column {
-    max-width: 50%;
-  }
+.error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
 }
 </style>
