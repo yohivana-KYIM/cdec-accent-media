@@ -1,246 +1,222 @@
 <template>
-  <div class="containers">
-    <div class="arrow l" @click="prev">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        width="30"
-        height="30"
-      >
-        <path d="M15 18l-6-6 6-6v12z" fill="#324C9C" />
-      </svg>
-    </div>
-    <div class="slide slide-1">
-      <div class="caption">
-        <h3 data-text="Bienvenue à la Caisse des Dépôts et Consignations"></h3>
-        <p
-          data-text="Des services de consignation et de dépôt fiables pour votre tranquillité d'esprit."
-        ></p>
-      </div>
-    </div>
-    <div class="slide slide-2">
-      <div class="caption">
-        <h3 data-text="La Banque, les Administrations Publiques"></h3>
-        <p data-text="Au coeur de la finance camerounaise"></p>
-      </div>
-    </div>
-    <div class="slide slide-3">
-      <div class="caption">
-        <h3 data-text="Sécurisez Vos Économies avec la CDEC Cameroun"></h3>
-        <p
-          data-text="Des solutions sur mesure pour la gestion de vos finances personnelles et professionnelles."
-        ></p>
-      </div>
-    </div>
-    <div class="arrow r" @click="next">
-      <!-- SVG pour la flèche droite avec couleur #324C9C -->
+  <div
+    class="relative w-full h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden"
+  >
+    <!-- Transition de groupe pour les images -->
+    <transition-group
+      name="fade"
+      tag="div"
+      class="absolute inset-0 w-full h-full"
+    >
+      <img
+        v-for="(slide, index) in slides"
+        :key="index"
+        :src="slide.image"
+        :class="[
+          'absolute inset-0 w-full h-full object-cover transition-opacity duration-500',
+          {
+            'opacity-100': index === current_index,
+            'opacity-0': index !== current_index,
+          },
+        ]"
+        :alt="`Slide ${index + 1}`"
+      />
+    </transition-group>
 
+    <!-- Texte associé à chaque image -->
+    <div
+      class="absolute inset-0 flex flex-col items-center justify-center p-4 text-white bg-black bg-opacity-50 sm:p-8"
+    >
+      <!-- Titre avec animation -->
+      <h1
+        v-text="slides[current_index].title"
+        class="flex items-center justify-center mb-2 text-2xl font-bold text-center sm:mb-4 sm:text-4xl md:text-5xl text-outline"
+      ></h1>
+
+      <!-- Description avec animation d'écriture -->
+      <p
+        class="mb-4 text-sm text-center sm:mb-8 sm:text-xl md:text-2xl text-contour"
+      >
+        <span>{{ displayedDescription }}</span>
+        <span class="animate-blink">|</span>
+      </p>
+    </div>
+
+    <!-- Boutons de navigation -->
+    <button
+      @click="prev_slide"
+      class="absolute p-1 transition-all transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full left-2 sm:left-4 top-1/2 sm:p-2 hover:bg-opacity-75"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
+        fill="none"
         viewBox="0 0 24 24"
-        width="30"
-        height="30"
+        stroke="currentColor"
+        class="w-4 h-4 sm:w-6 sm:h-6"
       >
-        <path d="M9 18l6-6-6-6v12z" fill="#324C9C" />
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 19l-7-7 7-7"
+        />
       </svg>
-    </div>
+    </button>
+
+    <button
+      @click="next_slide"
+      class="absolute p-1 transition-all transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full right-2 sm:right-4 top-1/2 sm:p-2 hover:bg-opacity-75"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        class="w-4 h-4 sm:w-6 sm:h-6"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 5l7 7-7 7"
+        />
+      </svg>
+    </button>
   </div>
 </template>
 
-<script setup>
-import { onMounted, onBeforeUnmount } from "vue";
+<script>
+import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 
-let slides;
-let current = 0;
-let autoScrollInterval;
-let typingInterval;
+export default {
+  name: "HeroBanner",
 
-const cls = () => {
-  slides.forEach((slide) => {
-    slide.style.display = "none";
-  });
+  setup() {
+    const slides = ref([
+      {
+        image: "/images/img3.jpg",
+        title: "Bienvenue à la Caisse des Dépôts et Consignations",
+        description:
+          "Des services de consignation et de dépôt fiables pour votre tranquillité d'esprit.",
+      },
+      {
+        image: "/images/img4.jpg",
+        title: "La Banque, les Administrations Publiques",
+        description: "Au coeur de la finance camerounaise",
+      },
+      {
+        image: "/images/img5.jpg",
+        title: "Sécurisez Vos Économies avec la CDEC Cameroun",
+        description:
+          "Des solutions sur mesure pour la gestion de vos finances personnelles et professionnelles.",
+      },
+    ]);
+
+    const current_index = ref(0);
+    const displayedDescription = ref("");
+    let sliderTimer = null;
+    let typingTimer = null;
+
+    const preloadImages = () => {
+      slides.value.forEach((slide) => {
+        const img = new Image();
+        img.src = slide.image;
+      });
+    };
+
+    const start_slider = () => {
+      sliderTimer = setInterval(() => {
+        next_slide();
+      }, 5000);
+    };
+
+    const reset_timer = () => {
+      clearInterval(sliderTimer);
+      start_slider();
+    };
+
+    const prev_slide = () => {
+      current_index.value =
+        (current_index.value - 1 + slides.value.length) % slides.value.length;
+      reset_timer();
+      start_typing_effect();
+    };
+
+    const next_slide = () => {
+      current_index.value = (current_index.value + 1) % slides.value.length;
+      reset_timer();
+      start_typing_effect();
+    };
+
+    const start_typing_effect = () => {
+      clearTimeout(typingTimer);
+      displayedDescription.value = "";
+      const description = slides.value[current_index.value].description;
+      let index = 0;
+
+      const type = () => {
+        if (index < description.length) {
+          displayedDescription.value += description[index];
+          index++;
+          typingTimer = setTimeout(type, 50); // Vitesse de frappe
+        }
+      };
+
+      type();
+    };
+
+    watch(current_index, start_typing_effect);
+
+    onMounted(() => {
+      preloadImages();
+      start_slider();
+      start_typing_effect();
+    });
+
+    onBeforeUnmount(() => {
+      clearInterval(sliderTimer);
+      clearTimeout(typingTimer);
+    });
+
+    return {
+      slides,
+      current_index,
+      prev_slide,
+      next_slide,
+      displayedDescription,
+    };
+  },
 };
-
-const next = () => {
-  cls();
-  if (current === slides.length - 1) current = -1;
-  current++;
-  showSlide();
-};
-
-const prev = () => {
-  cls();
-  if (current === 0) current = slides.length;
-  current--;
-  showSlide();
-};
-
-const showSlide = () => {
-  slides[current].style.display = "block";
-  slides[current].style.opacity = 0.4;
-  let x = 0.4;
-  const intX = setInterval(() => {
-    x += 0.1;
-    slides[current].style.opacity = x;
-    if (x >= 1) {
-      clearInterval(intX);
-      x = 0.4;
-    }
-  }, 100);
-  startTyping(slides[current]);
-};
-
-const typeText = (element, text, callback) => {
-  clearInterval(typingInterval);
-  element.innerHTML = "";
-  let i = 0;
-  typingInterval = setInterval(() => {
-    if (i < text.length) {
-      element.innerHTML += text.charAt(i);
-      i++;
-    } else {
-      clearInterval(typingInterval);
-      if (callback) callback();
-    }
-  }, 100);
-};
-
-const startTyping = (slide) => {
-  const h3 = slide.querySelector("h3");
-  const p = slide.querySelector("p");
-  typeText(h3, h3.getAttribute("data-text"), () => {
-    typeText(p, p.getAttribute("data-text"));
-  });
-};
-
-const start = () => {
-  cls();
-  slides[current].style.display = "block";
-  startTyping(slides[current]);
-};
-
-const autoScroll = () => {
-  autoScrollInterval = setInterval(next, 20000);
-};
-
-const stopAutoScroll = () => {
-  clearInterval(autoScrollInterval);
-};
-
-onMounted(() => {
-  slides = document.querySelectorAll(".slide");
-  start();
-  autoScroll();
-});
-
-onBeforeUnmount(() => {
-  stopAutoScroll();
-  clearInterval(typingInterval);
-});
 </script>
 
 <style scoped>
-@import "../../../css/accueil.css";
-
-.containers {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.slide {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: none;
-  background-size: cover;
-  background-position: center;
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.5s ease-in-out;
 }
 
-.arrow img {
-  width: 30px;
-  height: 30px;
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
-.l {
-  left: 20px;
+.text-contour {
+  text-shadow: 2px 2px 0 #0d1c02, -1px -1px 0 #0d1c02, 1px -1px 0 #0d1c02,
+    -1px 1px 0 #0d1c02, 1px 1px 0 #0d1c02;
 }
 
-.r {
-  right: 20px;
+.text-outline {
+  text-shadow: 2px 2px 0 #0d1c02, -1px -1px 0 #0d1c02, 1px -1px 0 #0d1c02,
+    -1px 1px 0 #0d1c02, 1px 1px 0 #0d1c02;
 }
 
-/* Responsive Design */
-@media screen and (max-width: 1024px) {
-  .caption h3 {
-    font-size: 2em;
-  }
-
-  .caption p {
-    font-size: 1.1em;
-  }
+.animate-blink {
+  animation: blink 1s step-start infinite;
 }
 
-@media screen and (max-width: 768px) {
-  .caption {
-    width: 90%;
-    padding: 15px;
-  }
-
-  .caption h3 {
-    font-size: 1.8em;
-    margin-bottom: 15px;
-  }
-
-  .caption p {
-    font-size: 1em;
-  }
-
-  .arrow {
-    width: 40px;
-    height: 40px;
-  }
-
-  .arrow img {
-    width: 25px;
-    height: 25px;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .caption {
-    width: 95%;
-    padding: 10px;
-  }
-
-  .caption h3 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-  }
-
-  .caption p {
-    font-size: 0.9em;
-    line-height: 1.4;
-  }
-
-  .arrow {
-    width: 35px;
-    height: 35px;
-  }
-
-  .arrow img {
-    width: 20px;
-    height: 20px;
-  }
-
-  .l {
-    left: 10px;
-  }
-
-  .r {
-    right: 10px;
+@keyframes blink {
+  50% {
+    opacity: 0;
   }
 }
 </style>

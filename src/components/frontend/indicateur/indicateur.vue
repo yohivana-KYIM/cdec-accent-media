@@ -128,6 +128,15 @@ onMounted(() => {
   position: relative;
   overflow: hidden;
 }
+.num_information {
+  -webkit-tap-highlight-color: transparent; /* Supprime le surlignement bleu sur iOS */
+}
+
+@media (max-width: 576px) {
+  .num_information .num {
+    font-size: 2rem; /* Ajuste légèrement pour les petits écrans */
+  }
+}
 
 .num_information::before {
   content: "";
